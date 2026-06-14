@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="REES Job Form">
+<meta name="theme-color" content="#1565C0">
+<title>REES Job Status Form</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--blue:#1565C0;--blue-mid:#1a56db;--blue-light:#e8f0fe;--blue-lighter:#f0f6ff;--green:#2a7d2e;--gray:#6b7280;--gray-light:#f5f7fa;--gray-border:#dde3ed;--red:#c0392b;--text:#1a1a2e;--text-muted:#5a6172;--radius:10px;--shadow:0 1px 4px rgba(0,40,100,.08)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#eef2f9;color:var(--text);min-height:100vh;padding-bottom:2.5rem}
+.header{background:var(--blue-lighter);border-bottom:2px solid #c5d5ee;padding:1.25rem 1rem 1rem;text-align:center}
+.header img{height:72px;margin-bottom:.5rem}
+.header h1{font-size:1.5rem;font-weight:700;color:var(--blue)}
+.header p{font-size:.82rem;color:var(--text-muted);margin-top:.15rem}
+.autosave-strip{background:#fff;border-bottom:1px solid var(--gray-border);padding:.4rem 1rem;display:flex;align-items:center;justify-content:space-between;font-size:.78rem;color:var(--text-muted)}
+.save-dot{width:8px;height:8px;border-radius:50%;background:#aaa;display:inline-block;margin-right:.4rem;vertical-align:middle}
+.save-dot.green{background:#22c55e}
+.progress-bar{height:3px;background:#c5d5ee}
+.progress-fill{height:100%;background:var(--blue-mid);transition:width .4s}
+.container{max-width:740px;margin:0 auto;padding:1rem}
+.install-banner{background:linear-gradient(135deg,#1565C0,#1a56db);color:#fff;padding:.9rem 1rem;border-radius:var(--radius);display:none;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:1rem}
+.install-banner p{font-size:.82rem;line-height:1.4}
+.install-banner strong{display:block;font-size:.9rem;margin-bottom:.1rem}
+.btn-install{background:#fff;color:#1565C0;border:none;padding:.45rem .9rem;border-radius:7px;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.btn-dismiss-install{background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:1.3rem;flex-shrink:0}
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--gray-border);margin-bottom:1rem;overflow:hidden}
+.card-header{background:var(--blue);padding:.65rem 1rem;display:flex;align-items:center;gap:.5rem}
+.card-header h2{font-size:.82rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.06em}
+.card-header .req-note{font-size:.72rem;color:rgba(255,255,255,.7);margin-left:auto}
+.card-body{padding:1rem}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem}
+.row.full{grid-template-columns:1fr}
+.row.thirds{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:520px){.row,.row.thirds{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:.3rem}
+label{font-size:.8rem;font-weight:600;color:var(--text-muted)}
+label .req{color:var(--red);margin-left:.1rem}
+input[type=text],input[type=email],input[type=tel],input[type=date],input[type=time],input[type=number],select,textarea{border:1.5px solid var(--gray-border);border-radius:8px;padding:.55rem .75rem;font-size:.92rem;font-family:inherit;color:var(--text);background:#fff;width:100%;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(26,86,219,.1)}
+textarea{resize:vertical;min-height:90px;line-height:1.5}
+select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6172' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center;padding-right:2rem}
+.toggle-wrap{display:flex;align-items:center;gap:.5rem;margin-top:.2rem}
+.toggle{position:relative;display:inline-block;width:48px;height:26px}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;inset:0;background:#e5e7eb;border-radius:26px;transition:.25s}
+.slider::before{content:"";position:absolute;height:20px;width:20px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle input:checked + .slider{background:var(--green)}
+.toggle input:checked + .slider::before{transform:translateX(22px)}
+.checkbox-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem .75rem}
+.check-item{display:flex;align-items:center;gap:.5rem;cursor:pointer;padding:.35rem .5rem;border-radius:7px;border:1.5px solid var(--gray-border);transition:all .15s;user-select:none}
+.check-item:hover{border-color:var(--blue-mid);background:var(--blue-light)}
+.check-item input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--blue-mid)}
+.check-item span{font-size:.85rem;font-weight:500}
+.check-item.checked{border-color:var(--blue-mid);background:var(--blue-light)}
+.file-check-note{background:#dbeafe;border:1px solid #93c5fd;border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem}
+.file-check-note p{font-size:.82rem;color:#1e3a8a;line-height:1.5}
+.file-check-note strong{font-size:.85rem;display:block;margin-bottom:.25rem}
+.file-check-note code{font-family:monospace;font-size:.78rem;background:rgba(30,58,138,.1);padding:.1rem .3rem;border-radius:3px}
+.file-checklist{display:flex;flex-direction:column;gap:.4rem}
+.file-check-item{display:flex;align-items:center;gap:.6rem;padding:.3rem .25rem;cursor:pointer}
+.file-check-item input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--blue-mid)}
+.file-check-item span{font-size:.88rem;font-family:monospace}
+.hours-table,.parts-table{width:100%;border-collapse:collapse;font-size:.85rem;margin-bottom:.5rem}
+.hours-table th,.parts-table th{background:var(--blue);color:#fff;padding:.5rem .6rem;text-align:left;font-size:.75rem;font-weight:600;letter-spacing:.04em}
+.hours-table td,.parts-table td{padding:.35rem .4rem;border-bottom:1px solid var(--gray-border)}
+.hours-table input,.hours-table select,.parts-table input,.parts-table select{border:1px solid var(--gray-border);border-radius:5px;padding:.3rem .4rem;font-size:.83rem;width:100%}
+.hours-table select,.parts-table select{background-position:right .3rem center;padding-right:1.4rem}
+.btn-add-row{background:none;border:1.5px dashed var(--blue-mid);color:var(--blue-mid);padding:.38rem .8rem;border-radius:7px;cursor:pointer;font-size:.8rem;font-weight:600;display:inline-flex;align-items:center;gap:.3rem;margin-top:.4rem}
+.btn-add-row:hover{background:var(--blue-light)}
+.btn-del-row{background:none;border:none;color:#aaa;cursor:pointer;font-size:1rem;padding:.2rem .35rem;border-radius:4px}
+.btn-del-row:hover{color:var(--red);background:#fff0f0}
+.email-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+@media(max-width:520px){.email-grid{grid-template-columns:1fr}}
+.email-field-wrap{display:flex;flex-direction:column;gap:.25rem}
+.email-caption{font-size:.72rem;color:var(--text-muted)}
+.sig-pair-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:520px){.sig-pair-row{grid-template-columns:1fr}}
+.sig-panel{display:flex;flex-direction:column}
+.sig-half canvas{height:90px !important}
+.sig-container{border:2px dashed var(--gray-border);border-radius:8px;overflow:hidden;position:relative;background:#fafafa;touch-action:none;cursor:crosshair}
+.sig-container canvas{display:block;touch-action:none}
+.sig-label{font-size:.68rem;color:#ccc;position:absolute;bottom:.3rem;right:.5rem;pointer-events:none;z-index:1}
+.sig-actions{display:flex;justify-content:flex-end;margin-top:.4rem}
+.btn-clear-sig{background:none;border:1px solid var(--gray-border);color:var(--text-muted);padding:.28rem .65rem;border-radius:6px;cursor:pointer;font-size:.78rem}
+.btn-clear-sig:hover{border-color:var(--red);color:var(--red)}
+.sig-status{font-size:.75rem;color:var(--text-muted);margin-top:.2rem}
+.sig-status.signed{color:var(--green)}
+.divider{border:none;border-top:1px solid var(--gray-border);margin:.75rem 0}
+.action-bar{padding:.75rem 1rem 1rem;display:flex;flex-direction:column;gap:.6rem}
+.btn{border:none;padding:.75rem 1.1rem;border-radius:10px;font-size:.95rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:all .15s;width:100%}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:#001f5c}
+.btn-secondary-outline{background:#fff;color:var(--blue);border:2px solid var(--blue)}
+.btn-secondary-outline:hover{background:var(--blue-light)}
+.btn-gray{background:var(--gray-light);color:var(--text-muted);border:1px solid var(--gray-border)}
+.btn-gray:hover{background:#e5e7eb}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(20px);background:#1e293b;color:#fff;padding:.65rem 1.2rem;border-radius:10px;font-size:.875rem;opacity:0;transition:all .3s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:200;padding:1rem}
+.modal{background:#fff;border-radius:12px;padding:1.5rem;max-width:500px;width:100%}
+.modal h3{font-size:1.05rem;font-weight:700;color:var(--blue);margin-bottom:.5rem}
+.modal p{font-size:.85rem;color:var(--text-muted);line-height:1.55;margin-bottom:.9rem}
+.modal-btns{display:flex;gap:.5rem;flex-wrap:wrap}
+.modal-btn{flex:1;min-width:90px;border:none;padding:.55rem .8rem;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer}
+.modal-btn-primary{background:var(--blue);color:#fff}
+.modal-btn-secondary{background:var(--gray-light);color:var(--text)}
+.view-header{background:var(--blue);color:#fff;padding:1.25rem 1rem;text-align:center}
+.view-header img{height:52px;margin-bottom:.4rem;filter:brightness(0) invert(1)}
+.view-header h2{font-size:1.1rem;font-weight:700}
+.view-header p{font-size:.8rem;opacity:.8;margin-top:.2rem}
+.fd-label{font-size:.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.15rem}
+.fd-value{font-size:.9rem;padding:.25rem 0 .4rem;border-bottom:1px solid var(--gray-border);min-height:1.5rem}
+.fd-wrap{margin-bottom:.5rem}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+<script>
+const LOGO_B64="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";
+const LOGO_SRC="data:image/jpeg;base64,"+LOGO_B64;
+let deferredInstall=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstall=e;const b=document.getElementById("install-banner");if(b)b.style.display="flex";});
+if("serviceWorker"in navigator){const sw=`self.addEventListener("install",e=>self.skipWaiting());self.addEventListener("activate",e=>self.clients.claim());self.addEventListener("fetch",e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>new Response("Offline")))));`;navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:"text/javascript"}))).catch(()=>{});}
+const CLIENT_MODE=location.hash.startsWith("#client:");
+const STORAGE_KEY="rees_jsf_v4";
+const BREVO_API_KEY="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";
+const BREVO_SENDER={name:"REES Scientific",email:"salimpalla@hotmail.com"};
+const FORM_BASE_URL="https://algorism75.github.io/ReesJobStatusForm";
+
+function freshState(){return{companyName:"",pocName:"",customerNum:"",orderNum:"",installNum:"",freshDeskTicket:"",jobTypes:[],dateOfService:new Date().toISOString().slice(0,10),scopeOfWork:"",workCompleted:"",workRemaining:"",jobCompleted:false,returnTrip:false,jobCompletionPct:"",workStoppageReason:"",hours:[{tech:"",hours:"",date:"",startTime:"",ampm:"AM"}],parts:[{part:"",amount:"",billable:""}],clientName:"",clientSigData:null,techName:"",techSigData:null,fileChecks:{wirelessInfo:false,centronIni:false,centronTxt:false,reesIni:false,nodePrintout:false},pcEmail:"",rsmEmail:"",otherEmail:"",clientEmail:"",techEmail:""};}
+let state=freshState();
+function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){}const d=document.getElementById("save-dot");if(d){d.className="save-dot green";setTimeout(()=>{if(d)d.className="save-dot";},1800);}}
+function loadState(){try{const s=localStorage.getItem(STORAGE_KEY);if(s)state={...freshState(),...JSON.parse(s)};}catch(e){}}
+function toast(msg,dur=3000){const t=document.getElementById("toast");t.textContent=msg;t.style.background="";t.classList.add("show");setTimeout(()=>t.classList.remove("show"),dur);}
+function toastSuccess(msg){const t=document.getElementById("toast");t.textContent=msg;t.style.background="#166534";t.classList.add("show");setTimeout(()=>{t.classList.remove("show");t.style.background="";},4000);}
+function updateProgress(){const req=["companyName","pocName","customerNum","scopeOfWork","workCompleted","techName"];const filled=req.filter(f=>state[f]&&String(state[f]).trim()).length+(state.jobTypes.length>0?1:0)+(state.techSigData?1:0);const pct=Math.round(filled/(req.length+2)*100);const el=document.getElementById("progress-fill");if(el)el.style.width=pct+"%";}
+
+function initCanvas(id,key){
+  const canvas=document.getElementById(id);if(!canvas)return;
+  const ctx=canvas.getContext("2d");
+  canvas.width=canvas.offsetWidth||400;
+  canvas.height=canvas.closest(".sig-half")?75:130;
+  ctx.strokeStyle="#0a0a1a";ctx.lineWidth=2.2;ctx.lineCap="round";ctx.lineJoin="round";
+  if(state[key]){const img=new Image();img.onload=()=>ctx.drawImage(img,0,0);img.src=state[key];const st=document.getElementById(id+"-status");if(st){st.textContent="✓ Signature captured";st.className="sig-status signed";}}
+  let drawing=false,lx=0,ly=0;
+  function pt(e){const r=canvas.getBoundingClientRect();const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*(canvas.width/r.width),y:(s.clientY-r.top)*(canvas.height/r.height)};}
+  function start(e){e.preventDefault();drawing=true;const p=pt(e);lx=p.x;ly=p.y;}
+  function move(e){e.preventDefault();if(!drawing)return;const p=pt(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;}
+  function end(e){e.preventDefault();if(!drawing)return;drawing=false;state[key]=canvas.toDataURL();saveState();updateProgress();const st=document.getElementById(id+"-status");if(st){st.textContent="✓ Signature captured";st.className="sig-status signed";}}
+  canvas.addEventListener("mousedown",start);canvas.addEventListener("mousemove",move);canvas.addEventListener("mouseup",end);canvas.addEventListener("mouseleave",end);
+  canvas.addEventListener("touchstart",start,{passive:false});canvas.addEventListener("touchmove",move,{passive:false});canvas.addEventListener("touchend",end,{passive:false});
+  document.getElementById("clear-"+id)?.addEventListener("click",()=>{ctx.clearRect(0,0,canvas.width,canvas.height);state[key]=null;saveState();updateProgress();const st=document.getElementById(id+"-status");if(st){st.textContent="Draw your signature above";st.className="sig-status";}});
+}
+
+function bindInputs(){document.querySelectorAll("[data-field]").forEach(el=>{const f=el.dataset.field;if(el.type==="checkbox"){el.checked=!!state[f];el.addEventListener("change",()=>{state[f]=el.checked;saveState();updateProgress();});}else{el.value=state[f]||"";el.addEventListener("input",()=>{state[f]=el.value;saveState();updateProgress();})}});}
+function renderJobTypes(){const types=["Install","Service Call","PM Service (Any Val Serv)","Quality Service (RSM Directed)"];const cont=document.getElementById("job-types");if(!cont)return;cont.innerHTML="";types.forEach(t=>{const checked=state.jobTypes.includes(t);const item=document.createElement("label");item.className="check-item"+(checked?" checked":"");item.innerHTML=`<input type="checkbox" ${checked?"checked":""} data-jt="${t}"><span>${t}</span>`;const cb=item.querySelector("input");cb.addEventListener("change",()=>{if(cb.checked){if(!state.jobTypes.includes(t))state.jobTypes.push(t);item.classList.add("checked");}else{state.jobTypes=state.jobTypes.filter(x=>x!==t);item.classList.remove("checked");}saveState();updateProgress();});cont.appendChild(item);});}
+function renderHours(){const tb=document.getElementById("hours-tbody");if(!tb)return;tb.innerHTML="";state.hours.forEach((h,i)=>{const hrOpts=["Select","0.5","1","1.5","2","2.5","3","3.5","4","4.5","5","5.5","6","6.5","7","7.5","8","8.5","9","10","11","12"].map(v=>`<option${h.hours===v?" selected":""}>${v}</option>`).join("");const ampOpts=["AM","PM"].map(v=>`<option${h.ampm===v?" selected":""}>${v}</option>`).join("");const tr=document.createElement("tr");tr.innerHTML=`<td><input value="${h.tech||""}" placeholder="Tech name" data-hi="${i}" data-hk="tech"></td><td><select data-hi="${i}" data-hk="hours">${hrOpts}</select></td><td><input type="date" value="${h.date||""}" data-hi="${i}" data-hk="date" style="min-width:120px"></td><td><input type="time" value="${h.startTime||""}" data-hi="${i}" data-hk="startTime" style="min-width:90px"></td><td><select data-hi="${i}" data-hk="ampm" style="min-width:60px">${ampOpts}</select></td><td><button class="btn-del-row" data-hdi="${i}">✕</button></td>`;tb.appendChild(tr);});tb.querySelectorAll("[data-hi]").forEach(el=>{el.addEventListener("input",()=>{state.hours[+el.dataset.hi][el.dataset.hk]=el.value;saveState();});el.addEventListener("change",()=>{state.hours[+el.dataset.hi][el.dataset.hk]=el.value;saveState();});});tb.querySelectorAll(".btn-del-row").forEach(btn=>{btn.addEventListener("click",()=>{if(state.hours.length>1){state.hours.splice(+btn.dataset.hdi,1);saveState();renderHours();}});});}
+function renderParts(){const tb=document.getElementById("parts-tbody");if(!tb)return;tb.innerHTML="";state.parts.forEach((p,i)=>{const amtOpts=["Select","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"].map(v=>`<option${p.amount===v?" selected":""}>${v}</option>`).join("");const billOpts=["Select","Yes","No"].map(v=>`<option${p.billable===v?" selected":""}>${v}</option>`).join("");const tr=document.createElement("tr");tr.innerHTML=`<td><input value="${p.part||""}" placeholder="Part description" data-pi="${i}" data-pk="part"></td><td><select data-pi="${i}" data-pk="amount">${amtOpts}</select></td><td><select data-pi="${i}" data-pk="billable">${billOpts}</select></td><td><button class="btn-del-row" data-pdi="${i}">✕</button></td>`;tb.appendChild(tr);});tb.querySelectorAll("[data-pi]").forEach(el=>{el.addEventListener("input",()=>{state.parts[+el.dataset.pi][el.dataset.pk]=el.value;saveState();});el.addEventListener("change",()=>{state.parts[+el.dataset.pi][el.dataset.pk]=el.value;saveState();});});tb.querySelectorAll(".btn-del-row").forEach(btn=>{btn.addEventListener("click",()=>{if(state.parts.length>1){state.parts.splice(+btn.dataset.pdi,1);saveState();renderParts();}});});}
+function bindFileChecks(){document.querySelectorAll("[data-fc]").forEach(cb=>{cb.checked=!!(state.fileChecks&&state.fileChecks[cb.dataset.fc]);cb.addEventListener("change",()=>{if(!state.fileChecks)state.fileChecks={};state.fileChecks[cb.dataset.fc]=cb.checked;saveState();});});}
+
+function genClientLink(){const payload={companyName:state.companyName,pocName:state.pocName,customerNum:state.customerNum,orderNum:state.orderNum,installNum:state.installNum,freshDeskTicket:state.freshDeskTicket,jobTypes:state.jobTypes,dateOfService:state.dateOfService,scopeOfWork:state.scopeOfWork,workCompleted:state.workCompleted,workRemaining:state.workRemaining,jobCompleted:state.jobCompleted,returnTrip:state.returnTrip,jobCompletionPct:state.jobCompletionPct,workStoppageReason:state.workStoppageReason,hours:state.hours,parts:state.parts,techName:state.techName,techSigData:state.techSigData,pcEmail:state.pcEmail,rsmEmail:state.rsmEmail,otherEmail:state.otherEmail,clientEmail:state.clientEmail,techEmail:state.techEmail};return FORM_BASE_URL+"#client:"+btoa(unescape(encodeURIComponent(JSON.stringify(payload))));}
+
+function buildHtmlEmailBody(data,clientSigned){
+  const fv=v=>v||"—";
+  const partsRows=(data.parts||[]).filter(p=>p.part).map(p=>`<tr><td style="padding:8px 12px;border-bottom:1px solid #eef2f9;font-size:13px">${p.part}</td><td style="padding:8px 12px;border-bottom:1px solid #eef2f9;font-size:13px;text-align:center">${p.amount||"—"}</td><td style="padding:8px 12px;border-bottom:1px solid #eef2f9;font-size:13px;text-align:center">${p.billable||"—"}</td></tr>`).join("")||`<tr><td colspan="3" style="padding:8px 12px;font-size:13px;color:#888">None</td></tr>`;
+  const hoursRows=(data.hours||[]).filter(h=>h.tech).map(h=>`<tr><td style="padding:8px 12px;border-bottom:1px solid #eef2f9;font-size:13px">${h.tech}</td><td style="padding:8px 12px;border-bottom:1px solid #eef2f9;font-size:13px;text-align:center">${h.hours}</td><td style="padding:8px 12px;border-bottom:1px solid #eef2f9;font-size:13px;text-align:center">${h.date}</td><td style="padding:8px 12px;border-bottom:1px solid #eef2f9;font-size:13px;text-align:center">${h.startTime} ${h.ampm}</td></tr>`).join("")||`<tr><td colspan="4" style="padding:8px 12px;font-size:13px;color:#888">None</td></tr>`;
+  const jobTypes=(data.jobTypes||[]).join(", ")||"—";
+  const pct=data.jobCompletionPct||"0";
+  const completedBadge=data.jobCompleted?`<span style="background:#dcfce7;color:#166534;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600">Yes</span>`:`<span style="background:#fee2e2;color:#991b1b;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600">No</span>`;
+  const returnBadge=data.returnTrip?`<span style="background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600">Yes</span>`:`<span style="background:#f3f4f6;color:#374151;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600">No</span>`;
+  const techSig=data.techSigData?`<img src="${data.techSigData}" style="max-width:180px;max-height:65px;border:1px solid #e5e7eb;border-radius:6px;padding:4px;background:#fff" alt="Tech Signature">`:`<span style="color:#9ca3af;font-style:italic;font-size:13px">Not signed</span>`;
+  const clientSig=(clientSigned&&data.clientSigData)?`<img src="${data.clientSigData}" style="max-width:180px;max-height:65px;border:1px solid #e5e7eb;border-radius:6px;padding:4px;background:#fff" alt="Client Signature">`:`<span style="color:#f59e0b;font-style:italic;font-size:13px">Pending</span>`;
+  const sHdr=title=>`<tr><td colspan="2" style="padding:9px 14px;background:#1565C0;color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em">${title}</td></tr>`;
+  const iRow=(label,value)=>`<tr><td style="padding:8px 14px;font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #f3f4f6;width:38%;vertical-align:top">${label}</td><td style="padding:8px 14px;font-size:13px;color:#1a1a2e;border-bottom:1px solid #f3f4f6">${value||"—"}</td></tr>`;
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:0;background:#f0f4ff;font-family:Arial,Helvetica,sans-serif"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4ff;padding:24px 0"><tr><td align="center"><table width="620" cellpadding="0" cellspacing="0" style="max-width:620px;width:100%"><tr><td style="background:#1565C0;border-radius:10px 10px 0 0"><table width="100%" cellpadding="0" cellspacing="0"><tr><td style="padding:16px 20px;vertical-align:middle;width:70px"><img src="${LOGO_SRC}" width="52" height="52" style="border-radius:6px" alt="REES"></td><td style="padding:16px 0;vertical-align:middle"><div style="color:#fff;font-size:17px;font-weight:700">REES Job Status Report</div><div style="color:#ffffff;font-size:12px;margin-top:3px">Customer #: ${fv(data.customerNum)} | Order #: ${fv(data.orderNum)} | Install #: ${fv(data.installNum)}</div><div style="color:#ffffff;font-size:11px;margin-top:2px">FreshDesk: ${fv(data.freshDeskTicket)}</div></td><td style="padding:16px 20px 16px 0;text-align:right;vertical-align:middle;white-space:nowrap"><div style="background:rgba(255,255,255,.15);border-radius:6px;padding:6px 12px;display:inline-block"><div style="color:#ffffff;font-size:10px;text-transform:uppercase">Date</div><div style="color:#fff;font-size:13px;font-weight:600">${fv(data.dateOfService)}</div></div></td></tr></table></td></tr>
+<tr><td style="background:#fff;border-left:1px solid #dde3ed;border-right:1px solid #dde3ed">
+<table width="100%" cellpadding="0" cellspacing="0"><tr>
+<td width="50%" style="padding:16px 14px;vertical-align:top;border-right:1px solid #f3f4f6"><div style="font-size:11px;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid #1565C0">Customer Information</div><div style="font-size:11px;color:#9ca3af">Company Name</div><div style="font-size:13px;font-weight:600;color:#1a1a2e;margin-bottom:8px">${fv(data.companyName)}</div><div style="font-size:11px;color:#9ca3af">POC Name</div><div style="font-size:13px;color:#1a1a2e">${fv(data.pocName)}</div></td>
+<td width="50%" style="padding:16px 14px;vertical-align:top"><div style="font-size:11px;font-weight:700;color:#1565C0;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid #1565C0">Job Information</div><div style="font-size:11px;color:#9ca3af">Job Type</div><div style="margin-bottom:8px"><span style="background:#e8f0fe;color:#1565C0;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600">${jobTypes}</span></div><div style="font-size:11px;color:#9ca3af">Work Stoppage Reason</div><div style="font-size:13px;color:#1a1a2e">${fv(data.workStoppageReason)}</div></td>
+</tr></table>
+<div style="height:1px;background:#f3f4f6"></div>
+<table width="100%" cellpadding="0" cellspacing="0">${sHdr("Scope of Work")}<tr><td colspan="2" style="padding:12px 14px;font-size:13px;line-height:1.6;color:#1a1a2e">${fv(data.scopeOfWork)}</td></tr></table>
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:1px"><tr>
+<td width="50%" style="padding:12px 14px;vertical-align:top;border-right:1px solid #f3f4f6"><div style="font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Work Completed</div><div style="font-size:13px;color:#1a1a2e;line-height:1.6">${fv(data.workCompleted)}</div></td>
+<td width="50%" style="padding:12px 14px;vertical-align:top"><div style="font-size:11px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Work Remaining</div><div style="font-size:13px;color:#1a1a2e;line-height:1.6">${fv(data.workRemaining)}</div></td>
+</tr></table>
+<div style="height:1px;background:#f3f4f6"></div>
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:1px"><tr>
+<td width="33%" style="padding:12px 14px;border-right:1px solid #f3f4f6;vertical-align:top"><div style="font-size:11px;color:#9ca3af;margin-bottom:5px">Job Completed?</div>${completedBadge}</td>
+<td width="33%" style="padding:12px 14px;border-right:1px solid #f3f4f6;vertical-align:top"><div style="font-size:11px;color:#9ca3af;margin-bottom:5px">Return Trip Required?</div>${returnBadge}</td>
+<td width="33%" style="padding:12px 14px;vertical-align:top"><div style="font-size:11px;color:#9ca3af;margin-bottom:5px">Job Completion</div><div style="background:#e5e7eb;border-radius:20px;height:8px;margin-bottom:3px;overflow:hidden"><div style="background:#1565C0;height:100%;width:${pct}%"></div></div><span style="font-size:12px;color:#6b7280">${pct}%</span></td>
+</tr></table>
+<div style="height:1px;background:#f3f4f6"></div>
+<table width="100%" cellpadding="0" cellspacing="0">${sHdr("Hours Worked")}<tr><td colspan="2" style="padding:0"><table width="100%" cellpadding="0" cellspacing="0"><thead><tr style="background:#f9fafb"><th style="padding:8px 12px;text-align:left;font-size:11px;color:#6b7280;font-weight:600">Tech</th><th style="padding:8px 12px;text-align:center;font-size:11px;color:#6b7280;font-weight:600">Hours</th><th style="padding:8px 12px;text-align:center;font-size:11px;color:#6b7280;font-weight:600">Date</th><th style="padding:8px 12px;text-align:center;font-size:11px;color:#6b7280;font-weight:600">Start Time</th></tr></thead><tbody>${hoursRows}</tbody></table></td></tr></table>
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:1px">${sHdr("Additional Parts Used")}<tr><td colspan="2" style="padding:0"><table width="100%" cellpadding="0" cellspacing="0"><thead><tr style="background:#f9fafb"><th style="padding:8px 12px;text-align:left;font-size:11px;color:#6b7280;font-weight:600">Part</th><th style="padding:8px 12px;text-align:center;font-size:11px;color:#6b7280;font-weight:600">Amount</th><th style="padding:8px 12px;text-align:center;font-size:11px;color:#6b7280;font-weight:600">Billable</th></tr></thead><tbody>${partsRows}</tbody></table></td></tr></table>
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:1px">${sHdr("Signatures")}<tr>
+<td width="50%" style="padding:16px 14px;vertical-align:top;border-right:1px solid #f3f4f6"><div style="font-size:11px;color:#9ca3af;margin-bottom:2px">Tech Name</div><div style="font-size:13px;font-weight:600;color:#1a1a2e;margin-bottom:10px">${fv(data.techName)}</div><div style="font-size:11px;color:#9ca3af;margin-bottom:6px">Tech Signature</div>${techSig}</td>
+<td width="50%" style="padding:16px 14px;vertical-align:top"><div style="font-size:11px;color:#9ca3af;margin-bottom:2px">Client Name</div><div style="font-size:13px;font-weight:600;color:#1a1a2e;margin-bottom:10px">${fv(data.clientName)}</div><div style="font-size:11px;color:#9ca3af;margin-bottom:6px">Client Signature</div>${clientSig}</td>
+</tr></table>
+</td></tr>
+<tr><td style="background:#1565C0;border-radius:0 0 10px 10px;padding:14px 24px;text-align:center"><p style="margin:0;color:#ffffff;font-size:11px">REES Scientific &nbsp;|&nbsp; 1007 Whitehead Rd. Ext Trenton, NJ 08638 &nbsp;|&nbsp; (609) 530-1055</p></td></tr>
+</table></td></tr></table></body></html>`;
+}
+
+async function sendViaBrevo(toEmails,subject,message){
+  const toList=toEmails.map(e=>({email:e}));
+  const response=await fetch("https://api.brevo.com/v3/smtp/email",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","api-key":BREVO_API_KEY},
+    body:JSON.stringify({
+      sender:BREVO_SENDER,
+      to:toList,
+      subject:subject,
+      htmlContent:message
+    })
+  });
+  return response.ok;
+}
+
+async function submitForm(){
+  const emails=[state.pcEmail,state.rsmEmail,state.otherEmail,state.clientEmail,state.techEmail].filter(e=>e&&e.includes("@"));
+  if(!emails.length){toast("Add at least one recipient email");return;}
+  const subject=`REES Job Status Form - ${state.companyName||"Customer"} - ${state.dateOfService}`;
+  const body=buildHtmlEmailBody(state,!!state.clientSigData);
+  const btn=document.getElementById("btn-submit");
+  btn.textContent="Sending...";btn.disabled=true;
+  try{
+    const ok=await sendViaBrevo(emails,subject,body);
+    if(ok){btn.textContent="Submit & Send Report";btn.disabled=false;toastSuccess(`Report sent to ${emails.length} recipient${emails.length>1?"s":""}!`);return;}
+  }catch(e){console.warn("Brevo error:",e);}
+  btn.textContent="Submit & Send Report";btn.disabled=false;
+  toast("Send failed - check console");
+}
+
+async function showClientModal(){
+  if(!state.techSigData){toast("Please sign as technician first");return;}
+  const link=genClientLink();
+  if(state.clientEmail&&state.clientEmail.includes("@")){
+    const btn=document.getElementById("btn-client-link");
+    btn.textContent="Sending to client...";btn.disabled=true;
+    try{
+      const subject=`Please sign: REES Job Status Form - ${state.companyName||""} - ${state.dateOfService}`;
+      const message=`<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:0;background:#f0f4ff;font-family:Arial,sans-serif"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4ff;padding:24px 0"><tr><td align="center"><table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%"><tr><td style="background:#1565C0;border-radius:10px 10px 0 0;padding:20px 24px;text-align:center"><img src="${LOGO_SRC}" width="52" height="52" style="border-radius:6px;margin-bottom:10px" alt="REES"><div style="color:#fff;font-size:18px;font-weight:700">Signature Required</div><div style="color:rgba(255,255,255,.75);font-size:13px;margin-top:4px">REES Scientific Job Status Form</div></td></tr><tr><td style="background:#fff;padding:28px 28px 20px;border-left:1px solid #dde3ed;border-right:1px solid #dde3ed"><p style="margin:0 0 12px;font-size:15px;color:#1a1a2e">Hi <strong>${state.pocName||"there"}</strong>,</p><p style="margin:0 0 20px;font-size:14px;color:#5a6172;line-height:1.6">Please review and sign the job status form for your recent REES Scientific service visit at <strong style="color:#1a1a2e">${state.companyName||""}</strong>.</p><div style="text-align:center;margin:24px 0"><a href="${link}" style="background:#1565C0;color:#ffffff;padding:14px 36px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px;display:inline-block">Review &amp; Sign Form</a></div><p style="margin:16px 0 0;font-size:12px;color:#9ca3af;text-align:center">Click the button above to open the form, review the completed work, and add your signature.</p></td></tr><tr><td style="background:#1565C0;border-radius:0 0 10px 10px;padding:14px 24px;text-align:center"><p style="margin:0;color:#ffffff;font-size:11px">REES Scientific &nbsp;|&nbsp; 1007 Whitehead Rd. Ext Trenton, NJ 08638 &nbsp;|&nbsp; (609) 530-1055</p><p style="margin:4px 0 0;font-size:11px;color:rgba(255,255,255,.5)">Sent by ${state.techName||"REES Scientific"}</p></td></tr></table></td></tr></table></body></html>`;
+      const ok=await sendViaBrevo([state.clientEmail],subject,message);
+      btn.textContent="Send to Client for Signature";btn.disabled=false;
+      if(ok){showSentModal(state.clientEmail,link);return;}
+    }catch(e){console.warn(e);}
+    btn.textContent="Send to Client for Signature";btn.disabled=false;
+  }
+  showShareModal(link);
+}
+
+function showSentModal(email,link){
+  const ov=document.createElement("div");ov.className="modal-overlay";
+  ov.innerHTML=`<div class="modal" style="text-align:center"><div style="font-size:3rem;margin-bottom:.5rem">✅</div><h3 style="margin-bottom:.4rem">Sent to Client</h3><p style="font-size:.88rem;color:var(--text-muted);margin-bottom:1rem">Signature request emailed to<br><strong>${email}</strong></p><div style="display:flex;gap:.5rem"><button class="btn btn-secondary-outline" style="flex:1;font-size:.85rem" id="also-copy">📋 Copy link</button><button class="btn btn-primary" style="flex:1;font-size:.85rem" onclick="this.closest('.modal-overlay').remove()">Done</button></div></div>`;
+  document.body.appendChild(ov);
+  document.getElementById("also-copy").onclick=()=>{navigator.clipboard.writeText(link).then(()=>toast("Link copied!")).catch(()=>{const ta=document.createElement("textarea");ta.value=link;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();toast("Copied!");});};
+  ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
+}
+
+function showShareModal(link){
+  const ov=document.createElement("div");ov.className="modal-overlay";
+  const hasEmail=state.clientEmail&&state.clientEmail.includes("@");
+  ov.innerHTML=`<div class="modal"><div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem"><div style="width:40px;height:40px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">✍️</div><div><h3 style="margin:0">Request Signature</h3><p style="margin:0;font-size:.78rem;color:var(--text-muted)">Share with ${state.pocName||"your client"}</p></div></div>${hasEmail?`<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:.83rem;color:#166534"><strong>Client email:</strong> ${state.clientEmail}</div>`:`<div style="background:#fef9c3;border:1px solid #fde047;border-radius:8px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:.82rem;color:#713f12">Add a Client Email above to send directly.</div>`}<div style="display:flex;flex-direction:column;gap:.5rem;margin-bottom:.75rem">${hasEmail?`<button class="btn btn-primary" id="modal-send-btn">Send Email to Client</button>`:""}<button class="btn ${hasEmail?"btn-secondary-outline":"btn-primary"}" id="modal-copy-btn">📋 Copy Link</button>${navigator.share?`<button class="btn btn-secondary-outline" id="modal-share-btn">↗ Share via...</button>`:""}<button class="btn btn-gray" onclick="this.closest('.modal-overlay').remove()">Cancel</button></div></div>`;
+  document.body.appendChild(ov);
+  document.getElementById("modal-copy-btn")?.addEventListener("click",()=>{navigator.clipboard.writeText(link).then(()=>{toast("Link copied!");ov.remove();}).catch(()=>{const ta=document.createElement("textarea");ta.value=link;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();toast("Copied!");ov.remove();});});
+  document.getElementById("modal-share-btn")?.addEventListener("click",()=>{navigator.share({title:"REES Job Form - Please Sign",url:link});ov.remove();});
+  document.getElementById("modal-send-btn")?.addEventListener("click",async()=>{ov.remove();await showClientModal();});
+  ov.addEventListener("click",e=>{if(e.target===ov)ov.remove();});
+}
+
+function renderClientMode(){
+  let data;
+  try{data=JSON.parse(decodeURIComponent(escape(atob(location.hash.slice("#client:".length)))));}
+  catch(e){document.getElementById("app").innerHTML="<p style='padding:2rem;color:red'>Invalid link.</p>";return;}
+  const fv=v=>v||"—";
+  const partsRows=(data.parts||[]).filter(p=>p.part).map(p=>`<tr><td>${fv(p.part)}</td><td>${fv(p.amount)}</td><td>${fv(p.billable)}</td></tr>`).join("")||`<tr><td colspan="3">None</td></tr>`;
+  const hoursRows=(data.hours||[]).filter(h=>h.tech).map(h=>`<tr><td>${fv(h.tech)}</td><td>${fv(h.hours)}</td><td>${fv(h.date)}</td><td>${fv(h.startTime)} ${fv(h.ampm)}</td></tr>`).join("")||`<tr><td colspan="4">None</td></tr>`;
+  document.getElementById("app").innerHTML=`<div class="view-header"><img src="${LOGO_SRC}" alt="REES"><h2>Job Status Form</h2><p>Please review and sign to confirm completion</p></div><div class="container"><div class="card"><div class="card-header"><h2>Customer Information</h2></div><div class="card-body"><div class="row"><div class="fd-wrap"><div class="fd-label">Company Name</div><div class="fd-value">${fv(data.companyName)}</div></div><div class="fd-wrap"><div class="fd-label">POC Name</div><div class="fd-value">${fv(data.pocName)}</div></div></div><div class="row thirds"><div class="fd-wrap"><div class="fd-label">Customer #</div><div class="fd-value">${fv(data.customerNum)}</div></div><div class="fd-wrap"><div class="fd-label">Order #</div><div class="fd-value">${fv(data.orderNum)}</div></div><div class="fd-wrap"><div class="fd-label">Install #</div><div class="fd-value">${fv(data.installNum)}</div></div></div><div class="row"><div class="fd-wrap"><div class="fd-label">FreshDesk Ticket</div><div class="fd-value">${fv(data.freshDeskTicket)}</div></div><div class="fd-wrap"><div class="fd-label">Date of Service</div><div class="fd-value">${fv(data.dateOfService)}</div></div></div><div class="fd-wrap"><div class="fd-label">Job Type</div><div class="fd-value">${(data.jobTypes||[]).join(", ")||"—"}</div></div></div></div><div class="card"><div class="card-header"><h2>Work Summary</h2></div><div class="card-body"><div class="fd-wrap"><div class="fd-label">Scope of Work</div><div class="fd-value" style="white-space:pre-wrap;min-height:48px">${fv(data.scopeOfWork)}</div></div><div class="row"><div class="fd-wrap"><div class="fd-label">Work Completed</div><div class="fd-value" style="white-space:pre-wrap;min-height:48px">${fv(data.workCompleted)}</div></div><div class="fd-wrap"><div class="fd-label">Work Remaining</div><div class="fd-value" style="white-space:pre-wrap;min-height:48px">${fv(data.workRemaining)}</div></div></div><div class="row"><div class="fd-wrap"><div class="fd-label">Job Completed?</div><div class="fd-value">${data.jobCompleted?"Yes":"No"}</div></div><div class="fd-wrap"><div class="fd-label">Completion %</div><div class="fd-value">${fv(data.jobCompletionPct)}%</div></div></div></div></div><div class="card"><div class="card-header"><h2>Hours Worked</h2></div><div class="card-body" style="overflow-x:auto"><table class="hours-table" style="font-size:.83rem"><thead><tr><th>Tech</th><th>Hours</th><th>Date</th><th>Start Time</th></tr></thead><tbody>${hoursRows}</tbody></table></div></div><div class="card"><div class="card-header"><h2>Parts Used</h2></div><div class="card-body" style="overflow-x:auto"><table class="parts-table" style="font-size:.83rem"><thead><tr><th>Part</th><th>Amount</th><th>Billable</th></tr></thead><tbody>${partsRows}</tbody></table></div></div>${data.techSigData?`<div class="card"><div class="card-header"><h2>Technician Signature</h2></div><div class="card-body"><img src="${data.techSigData}" style="max-width:100%;border:1px solid var(--gray-border);border-radius:6px"><p style="font-size:.75rem;color:var(--text-muted);margin-top:.25rem">${fv(data.techName)} - ${fv(data.dateOfService)}</p></div></div>`:""}<div class="card"><div class="card-header"><h2>Client Signature</h2></div><div class="card-body"><div class="row"><div class="field"><label>Client Name</label><input type="text" id="client-name-input" placeholder="Your full name"></div></div><p style="font-size:.82rem;color:var(--text-muted);margin:.5rem 0">By signing below, you confirm the work was completed to your satisfaction.</p><div class="sig-container"><span class="sig-label">Sign here with your finger</span><canvas id="client-sig-canvas"></canvas></div><div class="sig-actions"><button class="btn-clear-sig" id="clear-client-sig-canvas">Clear</button></div><p class="sig-status" id="client-sig-canvas-status">Draw your signature above</p></div></div><div class="card"><div class="card-body"><button class="btn btn-primary" id="client-submit-btn">Sign & Submit</button><p style="font-size:.75rem;color:var(--text-muted);text-align:center;margin-top:.5rem">This will email the signed report to REES Scientific</p></div></div></div>`;
+  document.getElementById("client-name-input").addEventListener("input",e=>{state.clientName=e.target.value;});
+  initCanvas("client-sig-canvas","clientSigData");
+  document.getElementById("client-submit-btn").onclick=async()=>{
+    if(!state.clientSigData){toast("Please sign before submitting");return;}
+    const clientData={...data,clientSigData:state.clientSigData,clientName:state.clientName||document.getElementById("client-name-input").value};
+    const emails=[data.pcEmail,data.rsmEmail,data.otherEmail,data.clientEmail,data.techEmail].filter(e=>e&&e.includes("@"));
+    const subj=`[SIGNED] REES Job Status Form - ${data.companyName||""} - ${data.dateOfService||""}`;
+    const body=buildHtmlEmailBody(clientData,true);
+    const btn=document.getElementById("client-submit-btn");
+    btn.textContent="Submitting...";btn.disabled=true;
+    try{if(emails.length){await sendViaBrevo(emails,subj,body);}}catch(e){console.warn(e);}
+    btn.textContent="Submitted! Thank you.";
+    toast("Form submitted with your signature!",5000);
+  };
+}
+
+function renderMainForm(){
+  document.getElementById("app").innerHTML=`<div class="header"><img src="${LOGO_SRC}" alt="REES Scientific logo"><h1>Job Status Form</h1><p>REES Scientific &nbsp;|&nbsp; 1007 Whitehead Rd. Ext Trenton, NJ 08638 &nbsp;|&nbsp; (609) 530-1055</p></div><div class="autosave-strip"><span><span class="save-dot" id="save-dot"></span>Auto-saving draft</span><span style="font-size:.72rem;color:#aaa">Data stays if you close</span></div><div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div><div class="container"><div class="install-banner" id="install-banner"><div><strong>Install App</strong><p>Add to home screen - works offline.</p></div><button class="btn-install" id="btn-install">Install</button><button class="btn-dismiss-install" id="btn-dismiss-install">x</button></div>
+<div class="card"><div class="card-header"><h2>Customer Information</h2><span class="req-note">* required</span></div><div class="card-body"><div class="row"><div class="field"><label>Company Name<span class="req">*</span></label><input type="text" data-field="companyName" placeholder="Customer company name"></div><div class="field"><label>Customer #</label><input type="text" data-field="customerNum" placeholder="Customer number"></div></div><div class="row"><div class="field"><label>POC Name<span class="req">*</span></label><input type="text" data-field="pocName" placeholder="Point of contact"></div><div class="field"><label>Order #</label><input type="text" data-field="orderNum" placeholder="Order number"></div></div><div class="row"><div class="field"><label>Install #</label><input type="text" data-field="installNum" placeholder="Install number"></div><div class="field"><label>FreshDesk Ticket</label><input type="text" data-field="freshDeskTicket" placeholder="Ticket number"></div></div></div></div>
+<div class="card"><div class="card-header"><h2>Job Type &amp; Date</h2></div><div class="card-body"><div class="row"><div class="field"><label>Job Type<span class="req">*</span></label><div class="checkbox-grid" id="job-types"></div></div><div class="field"><label>Date of Service</label><input type="date" data-field="dateOfService"></div></div></div></div>
+<div class="card"><div class="card-header"><h2>Work Details</h2></div><div class="card-body"><div class="row"><div class="field"><label>Scope of Work</label><textarea data-field="scopeOfWork" rows="4" placeholder="Describe the planned scope of work..."></textarea></div><div class="field"><label>Work Completed<span class="req">*</span></label><textarea data-field="workCompleted" rows="4" placeholder="Describe all work completed..."></textarea></div></div><div class="row full"><div class="field"><label>Work Remaining</label><textarea data-field="workRemaining" rows="3" placeholder="Outstanding items or follow-up actions..."></textarea></div></div><div class="row"><div class="field"><label>Job Completed?</label><div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="tog-jobCompleted"><span class="slider"></span></label><span id="jc-label" style="font-size:.9rem;font-weight:600;color:var(--red)">No</span></div></div><div class="field"><label>Job Completion %<span class="req">*</span></label><input type="number" data-field="jobCompletionPct" placeholder="0-100" min="0" max="100"></div></div><div class="row"><div class="field"><label>Return Trip Required?</label><div class="toggle-wrap"><label class="toggle"><input type="checkbox" id="tog-returnTrip"><span class="slider"></span></label><span id="rt-label" style="font-size:.9rem;font-weight:600;color:var(--red)">No</span></div></div><div class="field"><label>Work Stoppage Reason</label><select data-field="workStoppageReason"><option value="">Please Select</option><option>In Progress</option><option>Customer Not Available</option><option>Parts Not Available</option><option>Access Denied</option><option>Equipment Issue</option><option>Weather</option><option>Scheduling Conflict</option><option>Other</option></select></div></div></div></div>
+<div class="card"><div class="card-header"><h2>Hours Worked (Complete as Needed)</h2></div><div class="card-body" style="overflow-x:auto"><table class="hours-table"><thead><tr><th>Tech</th><th>Hours</th><th>Date</th><th>Start Time</th><th>AM/PM</th><th></th></tr></thead><tbody id="hours-tbody"></tbody></table><button class="btn-add-row" id="add-hour-btn">+ Add Row</button></div></div>
+<div class="card"><div class="card-header"><h2>Additional Parts Used</h2></div><div class="card-body" style="overflow-x:auto"><table class="parts-table"><thead><tr><th>Part</th><th>Amount</th><th>Billable</th><th></th></tr></thead><tbody id="parts-tbody"></tbody></table><button class="btn-add-row" id="add-part-btn">+ Add Row</button></div></div>
+<div class="card"><div class="card-header"><h2>Signatures</h2></div><div class="card-body"><div class="sig-pair-row"><div class="sig-panel"><div class="field" style="margin-bottom:.5rem"><label>Tech Name<span class="req">*</span></label><input type="text" data-field="techName" placeholder="Your full name"></div><div class="sig-container sig-half"><span class="sig-label">Technician signature</span><canvas id="tech-sig-canvas"></canvas></div><div class="sig-actions"><button class="btn-clear-sig" id="clear-tech-sig-canvas">Clear</button></div><p class="sig-status" id="tech-sig-canvas-status">Draw your signature above</p></div><div class="sig-panel"><div class="field" style="margin-bottom:.5rem"><label>Client Name</label><input type="text" data-field="clientName" placeholder="Client full name"></div><div class="sig-container sig-half"><span class="sig-label">Client signature</span><canvas id="client-sig-canvas"></canvas></div><div class="sig-actions"><button class="btn-clear-sig" id="clear-client-sig-canvas">Clear</button></div><p class="sig-status" id="client-sig-canvas-status">Draw or send to client</p></div></div></div></div>
+<div class="card"><div class="card-header"><h2>SharePoint File Checklist</h2></div><div class="card-body"><div class="file-check-note"><strong>Upload to SharePoint in folder:</strong><p><code>Technicians\ServiceCalls\Customer#-FDTicket#\SystemCertificationPaperwork</code></p><p style="margin-top:.4rem">File format: <code>filetype_Node# (ex. WirelessInfo_Node1.txt)</code></p></div><div class="file-checklist"><label class="file-check-item"><input type="checkbox" data-fc="wirelessInfo"><span>WirelessInfo.txt</span></label><label class="file-check-item"><input type="checkbox" data-fc="centronIni"><span>Centron.ini</span></label><label class="file-check-item"><input type="checkbox" data-fc="centronTxt"><span>Centron.txt</span></label><label class="file-check-item"><input type="checkbox" data-fc="reesIni"><span>Rees.ini</span></label><label class="file-check-item"><input type="checkbox" data-fc="nodePrintout"><span>Node Program Printout.pdf</span></label></div></div></div>
+<div class="card"><div class="card-header"><h2>Email Recipients</h2></div><div class="card-body"><div class="email-grid"><div class="email-field-wrap"><div class="field"><label>PC Email</label><input type="email" data-field="pcEmail" placeholder="example@example.com" autocomplete="off" name="pc-email-field"></div><span class="email-caption">Project coordinator</span></div><div class="email-field-wrap"><div class="field"><label>RSM Email</label><input type="email" data-field="rsmEmail" placeholder="example@example.com" autocomplete="off" name="rsm-email-field"></div><span class="email-caption">Regional service manager</span></div><div class="email-field-wrap"><div class="field"><label>Other Email</label><input type="email" data-field="otherEmail" placeholder="example@example.com" autocomplete="off" name="other-email-field"></div></div><div class="email-field-wrap"><div class="field"><label>Client Email</label><input type="email" data-field="clientEmail" placeholder="example@example.com" autocomplete="off" name="client-email-field"></div></div><div class="email-field-wrap"><div class="field"><label>Tech Email</label><input type="email" data-field="techEmail" placeholder="example@example.com" autocomplete="off" name="tech-email-field"></div><span class="email-caption">Your email</span></div></div></div></div>
+<div class="card"><div class="action-bar"><button class="btn btn-primary" id="btn-submit">Submit &amp; Send Report</button><button class="btn btn-secondary-outline" id="btn-client-link">Send to Client for Signature</button><button class="btn btn-gray" id="btn-clear">Clear Form</button></div></div></div>`;
+
+  bindInputs();renderJobTypes();renderHours();renderParts();bindFileChecks();
+
+  const jcTog=document.getElementById("tog-jobCompleted");const jcLabel=document.getElementById("jc-label");
+  jcTog.checked=!!state.jobCompleted;jcLabel.textContent=state.jobCompleted?"Yes":"No";jcLabel.style.color=state.jobCompleted?"var(--green)":"var(--red)";
+  jcTog.addEventListener("change",()=>{state.jobCompleted=jcTog.checked;jcLabel.textContent=jcTog.checked?"Yes":"No";jcLabel.style.color=jcTog.checked?"var(--green)":"var(--red)";saveState();});
+  const rtTog=document.getElementById("tog-returnTrip");const rtLabel=document.getElementById("rt-label");
+  rtTog.checked=!!state.returnTrip;rtLabel.textContent=state.returnTrip?"Yes":"No";rtLabel.style.color=state.returnTrip?"var(--green)":"var(--red)";
+  rtTog.addEventListener("change",()=>{state.returnTrip=rtTog.checked;rtLabel.textContent=rtTog.checked?"Yes":"No";rtLabel.style.color=rtTog.checked?"var(--green)":"var(--red)";saveState();});
+
+  setTimeout(()=>{initCanvas("tech-sig-canvas","techSigData");initCanvas("client-sig-canvas","clientSigData");updateProgress();},100);
+
+  document.getElementById("add-hour-btn").onclick=()=>{state.hours.push({tech:"",hours:"",date:"",startTime:"",ampm:"AM"});renderHours();};
+  document.getElementById("add-part-btn").onclick=()=>{state.parts.push({part:"",amount:"",billable:""});renderParts();};
+  document.getElementById("btn-submit").onclick=submitForm;
+  document.getElementById("btn-client-link").onclick=showClientModal;
+  document.getElementById("btn-clear").onclick=()=>{if(confirm("Clear all form data?")){localStorage.removeItem(STORAGE_KEY);state=freshState();renderMainForm();toast("Form cleared");}};
+  document.getElementById("btn-install")?.addEventListener("click",()=>{if(deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.then(()=>{deferredInstall=null;document.getElementById("install-banner").style.display="none";});}});
+  document.getElementById("btn-dismiss-install")?.addEventListener("click",()=>{document.getElementById("install-banner").style.display="none";});
+  document.querySelectorAll("[data-field]").forEach(el=>el.addEventListener("input",updateProgress));
+}
+
+if(!CLIENT_MODE)loadState();
+CLIENT_MODE?renderClientMode():renderMainForm();
+</script>
+</body>
+</html>
